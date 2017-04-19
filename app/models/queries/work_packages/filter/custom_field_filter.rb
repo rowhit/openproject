@@ -42,7 +42,7 @@ class Queries::WorkPackages::Filter::CustomFieldFilter <
       [[I18n.t(:general_text_yes), CustomValue::BoolStrategy::DB_VALUE_TRUE],
        [I18n.t(:general_text_no), CustomValue::BoolStrategy::DB_VALUE_FALSE]]
     when 'user', 'version'
-      custom_field.possible_values_options(context)
+      custom_field.possible_values_options(project)
     end
   end
 
@@ -90,7 +90,7 @@ class Queries::WorkPackages::Filter::CustomFieldFilter <
   end
 
   def self.all_for(context = nil)
-    custom_fields(context).map do |cf|
+    custom_fields(context.project).map do |cf|
       filter = new
       filter.custom_field = cf
       filter.context = context
@@ -174,12 +174,12 @@ class Queries::WorkPackages::Filter::CustomFieldFilter <
   end
 
   def invalid_custom_field_globally?
-    !self.class.custom_fields(context)
+    !self.class.custom_fields(project)
          .exists?(custom_field.id)
   end
 
   def invalid_custom_field_for_project?
-    !self.class.custom_fields(context)
+    !self.class.custom_fields(project)
          .map(&:id).include? custom_field.id
   end
 
